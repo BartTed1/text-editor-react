@@ -1,0 +1,145 @@
+// Color Palette
+@import "../../ColorPalette.scss";
+
+.TextEdit {
+    @media (max-width: 420px) {
+        width: 100vw;
+        height: 100vh;
+    }
+    padding: 10px;
+    background-color: $background;
+    textarea {
+        width: 100%;
+        min-height: 270px;
+        max-height: 66%;
+        resize: none;
+        border: none;
+        outline: none;
+        background-color: transparent;
+        font-family: 'Roboto', sans-serif;
+        font-size: 20px;
+    }
+    .textedit--over-limit {
+        color: $danger;
+        text-decoration: line-through;
+        text-decoration-thickness: 22px;
+        text-decoration-color: transparentize($danger, 0.7);
+    }
+    .counter--over-limit {
+        color: $danger;
+    }
+    .richText {
+        width: 100%;
+        min-height: 270px;
+        max-height: 66%;
+        resize: none;
+        border: none;
+        outline: none;
+        background-color: transparent;
+        font-family: 'Roboto', sans-serif;
+        font-size: 20px;
+        text-align: left;
+        overflow-x: auto;
+        img {
+            max-width: 100%;
+            width: 100%;
+            display: block;
+            border-radius: 10px;
+        }
+    }
+    [contentEditable=true]:empty:before {
+        content: attr(placeholder);
+        color: #546E7A;
+    }
+}
+
+.bar {
+    background-color: $foreground;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 10px;
+    height: 50px;
+    width: 100%;
+    padding: 10px;
+    div {
+        display: flex;
+        gap: 10px;
+    }
+    .counter {
+        line-height: 25px;
+    }
+    &__elem {
+        height: 100%;
+    }
+    &__submit {
+        height: 25px;
+        padding: 0px 10px;
+        background-color: $primary;
+        border: none;
+        color: white;
+        text-decoration: none;
+        border-radius: 12.5px;
+        cursor: pointer;
+        &:disabled {
+            background-color: $inactive;
+            cursor: not-allowed;
+        }
+    }
+}
+
+.files-container {
+    display: flex;
+    gap: 10px;
+    overflow-y: auto;
+    width: 100%;
+    max-height: 200px;
+    margin: 10px 0px;
+}
+
+.file-container {
+    max-width: 100%;
+    min-width: 45%;
+    min-height: 100px;
+    border: 1px solid $foreground;
+    border-radius: 10px;
+    position: relative;
+    &__button {
+        width: 30px;
+        height: 30px;
+        position: absolute;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        top: 10px;
+        right: 10px;
+        &--delete {
+            @extend .file-container__button;
+            background: url("./delete_icon.svg") center no-repeat;
+            background-size: contain;
+        }
+    }
+    &__image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        border-radius: inherit;
+    }
+    &--file {
+        @extend .file-container;
+        background: url("./file_icon.svg") center no-repeat;
+        background-size: contain;
+        display: flex;
+        align-items: end;
+        padding: 10px;
+        a {
+            text-underline: none;
+            text-decoration: none;
+            color: inherit;
+        }
+    }
+}
+
+
+

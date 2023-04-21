@@ -1,0 +1,37 @@
+.cameraUI {
+  position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000;
+    z-index: 100;
+}
+
+.cameraPreview {
+  margin: 5px;
+  object-fit: scale-down;
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 10px;
+  }
+}
+
+#video {
+  width: 100%;
+  background: #282c34;
+  border-radius: 10px;
+}
+
+.camera {
+  &__button {
+    width: 25px;
+    height: 25px;
+    background: transparent url('./camera_icon.svg') center no-repeat;
+    background-size: contain;
+    padding: 0px;
+    border: none;
+    outline: none;
+  }
+}
