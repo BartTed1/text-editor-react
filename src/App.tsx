@@ -6,7 +6,7 @@ function App() {
   return (
     <div className="App">
         <div className="ResInfo">{window.innerWidth}x{window.innerHeight}</div>
-      <TextEdit maxLength={100} maxFileSize={1024} allowedFileTypes={[FileTypes.IMAGE, FileTypes.PDF]} maxAllowedFiles={4}></TextEdit>
+      <TextEdit maxLength={100} maxFileSize={10240} allowedFileTypes={[FileTypes.IMAGE, FileTypes.VIDEO, FileTypes.PDF]} maxAllowedFiles={4}></TextEdit>
     </div>
   );
 }

@@ -95,12 +95,19 @@ class TextEdit extends React.Component<TextEditProps> {
                     </div>
                     <div>
                         { this.maxChars !== Infinity ? <span className={"counter"} ref={this.counterRef}>{this.state.currentLength}/{this.maxChars}</span> : "" }
-                        <button disabled={this.state.submitDisabled ? true : false} className={"bar__submit"} type={"button"} onClick={this.onSubmit}>Zapisz</button>
+                        <button disabled={this.state.submitDisabled} className={"bar__submit"} type={"button"} onClick={this.onSubmit}>Zapisz</button>
                     </div>
 
                 </div>
             </div>
         )
+    }
+
+    private onFileRemove = (event: Event, element: HTMLDivElement) => {
+        event.stopPropagation();
+        delete this.media[element.dataset.name as string];
+        element.remove();
+        this.fileDropRef.current?.onFileRemove();
     }
 
     private srcToImgPreview = (src: string, name: string) => {
@@ -122,6 +129,39 @@ class TextEdit extends React.Component<TextEditProps> {
         return container;
     }
 
+    private removeStyleAttr = (element: HTMLElement) => {
+        for(const child of element.children) {
+            child.removeAttribute('style');
+            if (child.children.length > 0) this.removeStyleAttr(child as HTMLElement);
+        }
+    }
+
+    private onInput = (event: React.KeyboardEvent<HTMLDivElement>) => {
+        this.removeStyleAttr(event.currentTarget);
+        this.setState({currentLength: event.currentTarget.innerText.length})
+        if (event.currentTarget.innerText.length > this.maxChars) {
+            event.currentTarget.classList.add('textedit--over-limit');
+            this.counterRef.current?.classList.add('counter--over-limit');
+            this.setState({submitDisabled: true});
+        } else {
+            event.currentTarget.classList.remove('textedit--over-limit');
+            this.counterRef.current?.classList.remove('counter--over-limit');
+            this.setState({submitDisabled: false});
+        }
+
+        if (event.currentTarget.innerText === "" || event.currentTarget.innerText === "\n") {
+            this.setState({submitDisabled: true});
+        }
+    }
+
+    private onSubmit = () => {
+        const content = {
+            text: this.textEditRef.current?.innerText,
+            media: this.media
+        }
+        // TODO: send content to server
+    }
+
     private srcToFilePreview = (src: string, type: string, name: string) => {
         const a = document.createElement('a');
         a.classList.add('file-container__link');
@@ -130,7 +170,7 @@ class TextEdit extends React.Component<TextEditProps> {
         a.innerText = name;
 
         const container = document.createElement('div');
-        container.classList.add('file-container--file');
+        container.classList.add('file-container__file');
         container.setAttribute("data-type", type);
         container.setAttribute("data-name", name);
         container.addEventListener("click", () => {
@@ -162,8 +202,30 @@ class TextEdit extends React.Component<TextEditProps> {
                     const preview = this.srcToImgPreview(reader.result as string, file.name);
                     this.filesContainerRef.current?.appendChild(preview);
                 }
-            } else if (file.type.includes("video")) {
+            }
+            else if (file.type.includes("video")) {
                 // TODO handle videos
+                // file save
+                this.media[file.name] = file;
+
+                // file preview
+                const video = document.createElement('video');
+                video.classList.add('file-container__video');
+                video.src = URL.createObjectURL(file);
+                video.controls = true;
+                const container = document.createElement('div');
+                container.classList.add('file-container');
+                container.setAttribute("data-type", "video");
+                container.setAttribute("data-name", file.name);
+                const closeButton = document.createElement('input');
+                closeButton.type = 'button';
+                closeButton.classList.add('file-container__button--delete');
+                closeButton.addEventListener('click', (event) => {
+                    this.onFileRemove(event, container);
+                });
+                container.appendChild(closeButton);
+                container.appendChild(video);
+                this.filesContainerRef.current?.appendChild(container);
             }
             else {
                 // file save
@@ -174,45 +236,6 @@ class TextEdit extends React.Component<TextEditProps> {
                 const preview = this.srcToFilePreview(URL.createObjectURL(file), file.type, file.name);
                 this.filesContainerRef.current?.appendChild(preview);
             }
-        }
-    }
-
-    private removeStyleAttr = (element: HTMLElement) => {
-        for(const child of element.children) {
-            child.removeAttribute('style');
-            if (child.children.length > 0) this.removeStyleAttr(child as HTMLElement);
-        }
-    }
-
-    private onInput = (event: React.KeyboardEvent<HTMLDivElement>) => {
-        this.removeStyleAttr(event.currentTarget);
-        this.setState({currentLength: event.currentTarget.innerText.length})
-        if (event.currentTarget.innerText.length > this.maxChars) {
-            event.currentTarget.classList.add('textedit--over-limit');
-            this.counterRef.current?.classList.add('counter--over-limit');
-            this.setState({submitDisabled: true});
-        } else {
-            event.currentTarget.classList.remove('textedit--over-limit');
-            this.counterRef.current?.classList.remove('counter--over-limit');
-            this.setState({submitDisabled: false});
-        }
-
-        if (event.currentTarget.innerText === "" || event.currentTarget.innerText === "\n") {
-            this.setState({submitDisabled: true});
-        }
-    }
-
-    private onFileRemove = (event: Event, element: HTMLDivElement) => {
-        event.stopPropagation();
-        delete this.media[element.dataset.name as string];
-        element.remove();
-        this.fileDropRef.current?.onFileRemove();
-    }
-
-    private onSubmit = () => {
-        const content = {
-            text: this.textEditRef.current?.innerText,
-            media: this.media
         }
     }
 }
